@@ -43,7 +43,7 @@ ORDER BY
     demand_count DESC
 LIMIT
     25
-
+    
 --rewriting this same query more concisely
 SELECT
     skills_dim.skill_id,
