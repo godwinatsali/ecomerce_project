@@ -1,0 +1,101 @@
+﻿product_id,product_name,category_id,price
+1,Laptop,1,65000
+2,Phone,1,25000
+3,Tablet,1,18000
+4,Headphones,1,3500
+5,Camera,1,42000
+6,T-Shirt,2,800
+7,Jeans,2,2500
+8,Jacket,2,4500
+9,Sneakers,2,3500
+10,Cap,2,500
+11,Blender,3,3500
+12,Microwave,3,12000
+13,Fridge,3,45000
+14,Toaster,3,2500
+15,Iron Box,3,1800
+16,Lipstick,4,1200
+17,Perfume,4,3500
+18,Lotion,4,900
+19,Makeup Kit,4,4500
+20,Face Wash,4,600
+21,Football,5,1500
+22,Basketball,5,1800
+23,Tennis Racket,5,6000
+24,Dumbbells,5,7000
+25,Yoga Mat,5,2500
+26,Notebook,6,80
+27,Novel,6,500
+28,Textbook,6,1500
+29,Magazine,6,250
+30,Diary,6,300
+31,Bread,7,70
+32,Milk,7,80
+33,Cheese,7,350
+34,Juice,7,150
+35,Rice (2kg),7,300
+36,Sofa,8,65000
+37,Bed,8,80000
+38,Table,8,20000
+39,Chair,8,3500
+40,Wardrobe,8,55000
+41,Toy Car,9,800
+42,Doll,9,1200
+43,Puzzle,9,600
+44,Board Game,9,2000
+45,RC Car,9,4500
+46,Car Tyre,10,8000
+47,Engine Oil,10,1500
+48,Battery,10,9000
+49,Brake Pads,10,4000
+50,Car Wash Kit,10,1200
+51,Smartwatch,1,12000
+52,Desktop PC,1,85000
+53,Graphics Card,1,45000
+54,Router,1,3500
+55,Power Bank,1,2500
+56,Hoodie,2,2000
+57,Suit,2,12000
+58,Belt,2,1200
+59,Socks Pack,2,500
+60,Watch,2,6000
+61,Air Fryer,3,15000
+62,Coffee Maker,3,9000
+63,Vacuum Cleaner,3,18000
+64,Hair Dryer,3,2500
+65,Electric Kettle,3,1800
+66,Foundation,4,2500
+67,Shampoo,4,700
+68,Conditioner,4,800
+69,Hair Oil,4,500
+70,Face Cream,4,1200
+71,Cricket Bat,5,5000
+72,Skipping Rope,5,800
+73,Gym Gloves,5,1200
+74,Running Shoes,5,4500
+75,Protein Shaker,5,600
+76,Pen Pack,6,200
+77,Backpack,6,2500
+78,Calculator,6,1200
+79,Sticky Notes,6,150
+80,Highlighter Set,6,300
+81,Flour (2kg),7,180
+82,Sugar (2kg),7,220
+83,Tea,7,500
+84,Coffee,7,700
+85,Cooking Oil (2L),7,600
+86,Dining Table,8,45000
+87,Office Chair,8,12000
+88,Shelf Unit,8,15000
+89,Mattress,8,25000
+90,Mirror,8,4000
+91,Stuffed Toy,9,1000
+92,Building Blocks,9,2500
+93,Drone Toy,9,12000
+94,Car Cover,10,3000
+95,Air Filter,10,2500
+96,Spark Plugs,10,1200
+97,Car Wax,10,900
+98,Dash Cam,10,8000
+99,Seat Cover,10,4000
+100,Tool Kit,10,6000
