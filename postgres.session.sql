@@ -5,3 +5,6 @@ SELECT
 FROM order_items
 LEFT JOIN products ON order_items.product_id = products.product_id
 LEFT JOIN categories ON products.category_id = categories.category_id
+
+
+SELECT datname FROM pg_database;
