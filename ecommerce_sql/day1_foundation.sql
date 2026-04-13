@@ -16,18 +16,18 @@ FROM orders;
 -- ============================================================
 -- Q2: Top 10 best-selling products by total quantity sold
 SELECT
-    p.product_id,
-    p.product_name,
-    c.category_name,
-    p.price,
-    SUM(oi.quantity)                                        AS total_units_sold,
-    COUNT(DISTINCT oi.order_id)                             AS times_ordered,
-    ROUND(SUM(oi.quantity) * p.price, 2)                   AS total_revenue,
-    ROW_NUMBER() OVER (ORDER BY SUM(oi.quantity) DESC)     AS sales_rank
-FROM order_items  oi
-JOIN products     p  ON p.product_id  = oi.product_id
-JOIN categories   c  ON c.category_id = p.category_id
-GROUP BY p.product_id, p.product_name, c.category_name, p.price
+    products.product_id,
+    products.product_name,
+    categories.category_name,
+    products.price,
+    SUM(order_items.quantity)                                        AS total_units_sold,
+    COUNT(DISTINCT order_items.order_id)                             AS times_ordered,
+    ROUND(SUM(order_items.quantity) * products.price, 2)                   AS total_revenue,
+    ROW_NUMBER() OVER (ORDER BY SUM(order_items.quantity) DESC)     AS sales_rank
+FROM order_items
+JOIN products ON products.product_id  = order_items.product_id
+JOIN categories ON categories.category_id = products.category_id
+GROUP BY products.product_id, products.product_name, categories.category_name, products.price
 ORDER BY total_units_sold DESC
 LIMIT 10;
 
@@ -44,11 +44,11 @@ ORDER BY total_customers DESC;
 -- ============================================================
 -- Q5: Number of products per category
 SELECT
-    c.category_name,
-    COUNT(p.product_id)   AS total_products
-FROM categories  c
-LEFT JOIN products p ON p.category_id = c.category_id
-GROUP BY c.category_name
+    categories.category_name,
+    COUNT(products.product_id)   AS total_products
+FROM categories  
+LEFT JOIN products ON products.category_id = categories.category_id
+GROUP BY categories.category_name
 ORDER BY total_products DESC;
 
 -- ============================================================
