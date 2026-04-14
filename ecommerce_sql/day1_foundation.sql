@@ -92,17 +92,5 @@ WHERE EXTRACT(YEAR FROM signup_date) = 2023;
 -- This shows a steady customer acquisition over time.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 =======
 
