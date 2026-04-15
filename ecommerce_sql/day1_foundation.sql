@@ -81,7 +81,14 @@ WHERE EXTRACT(YEAR FROM signup_date) = 2023;
 -- have exactly 60 customers each — a perfectly even 20% distribution.
 -- This suggests that all the 4 cities have equal customer domination.
 
--- Q4 FINDING: Query to be run in Day 2 revenue analysis.
+-- Q4 FINDING: Total revenue from completed orders is KES 6,296,160.
+-- Desktop PC is the top revenue-generating product at KES 1,020,000
+-- driven by its high price of KES 85,000 and 12 units sold.
+-- Sofa (KES 780,000) and Dining Table (KES 540,000) follow closely.
+-- High-ticket items (furniture + electronics) dominate the top 10
+-- despite not always having the highest quantities sold 
+-- e.g. Bed sold only 4 units but still made KES 320,000.
+-- Key insight: price drives revenue more than volume in this dataset.
 
 -- Q5 FINDING: Automotive has the most products (12),
 -- while all other categories have 10 products each except
