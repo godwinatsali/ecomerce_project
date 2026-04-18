@@ -70,5 +70,35 @@ ORDER BY
     month_num ASC;
 
 
+-- Q11: Cancellation & return rate by month
 
-SELECT * FROM orders
+SELECT 
+    TO_CHAR(order_date, 'Month') AS month_name,
+    EXTRACT(MONTH FROM order_date) AS month_num,
+    COUNT(*) AS total_orders,
+    COUNT(CASE WHEN order_status = 'Cancelled' THEN 1 END) AS Cancelled,
+    COUNT(CASE WHEN order_status = 'Returned' THEN 1 END) AS Returned,
+    ROUND(COUNT(CASE WHEN order_status = 'Cancelled' THEN 1 END) * 100.0 / COUNT(*), 1) AS cancel_rate_pct,
+    ROUND(COUNT(CASE WHEN order_status = 'Returned' THEN 1 END) * 100.0 / COUNT(*), 1) AS return_rate_pct
+FROM orders
+GROUP BY month_name, month_num
+ORDER BY month_num ASC;
+
+
+-- Q14: Revenue % contribution per category
+
+SELECT 
+    categories.category_name,
+    COUNT(DISTINCT orders.order_id) AS total_orders,
+    SUM(order_items.quantity) AS units_sold,
+    ROUND(SUM(order_items.quantity * products.price), 2) AS category_revenue,
+    ROUND(SUM(order_items.quantity * products.price) * 100.0 / SUM(SUM(order_items.quantity * products.price)) OVER(), 1) AS revenue_pct,
+    RANK() OVER(ORDER BY SUM(order_items.quantity * products.price) DESC) AS revenue_rank
+FROM order_items
+JOIN orders ON order_items.order_id = orders.order_id
+JOIN products ON order_items.product_id = products.product_id
+JOIN categories ON products.category_id = categories.category_id
+WHERE order_status = 'Completed'
+GROUP BY category_name
+ORDER BY category_revenue DESC;
+
