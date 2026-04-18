@@ -81,6 +81,7 @@ WHERE EXTRACT(YEAR FROM signup_date) = 2023;
 -- have exactly 60 customers each — a perfectly even 20% distribution.
 -- This suggests that all the 4 cities have equal customer domination.
 
+
 -- Q4 FINDING: Total revenue from completed orders is KES 6,296,160.
 -- Desktop PC is the top revenue-generating product at KES 1,020,000
 -- driven by its high price of KES 85,000 and 12 units sold.

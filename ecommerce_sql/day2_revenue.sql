@@ -55,3 +55,20 @@ ORDER BY month_num ASC;
 
 
 
+SELECT
+    TO_CHAR(orders.order_date, 'Month') AS month_name,
+    EXTRACT(MONTH FROM orders.order_date) AS month_num,
+    SUM(payments.amount_paid) AS Monthly_revenue
+FROM
+    payments
+JOIN orders ON payments.order_id = orders.order_id
+WHERE EXTRACT(YEAR FROM order_date) = 2024
+GROUP BY
+    month_name,
+    month_num
+ORDER BY
+    month_num ASC;
+
+
+
+SELECT * FROM orders
