@@ -99,11 +99,9 @@ ORDER BY month_num ASC;
 
 ===============================================================================
 
-
 ===============================================================================
 
             -- Q11: Cancellation & return rate by month
-
 SELECT 
     TO_CHAR(order_date, 'Month') AS month_name,
     EXTRACT(MONTH FROM order_date) AS month_num,
