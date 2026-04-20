@@ -37,7 +37,6 @@ WHERE orders.order_status = 'Completed';
 -- Key insight: price drives revenue more than volume in this dataset.
 ============================================================================
 
-
 ============================================================================ 
 
            -- Q7: Average shipping cost      
@@ -60,7 +59,6 @@ Q7 FINDING: Average shipping cost is KES 658.70 per order.
 -- to make costs more predictable for customers.
 
 ============================================================================
-
 
 ============================================================================
 
@@ -160,8 +158,6 @@ ORDER BY category_revenue DESC;
 
 ==============================================================================
 
-
-
 -- Check the date range in our dataset
 SELECT
     MIN(order_date)   AS earliest_order,
@@ -170,4 +166,4 @@ SELECT
 FROM orders;
 
 --Earliest order date is 2024-01-05
---Latedt order_date is 2024-10-30
+--Latest order_date is 2024-10-30
