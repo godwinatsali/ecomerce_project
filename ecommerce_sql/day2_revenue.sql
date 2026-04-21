@@ -165,3 +165,4 @@ FROM orders;
 
 --Earliest order date is 2024-01-05
 --Latest order_date is 2024-10-30
+--total orders = 300
