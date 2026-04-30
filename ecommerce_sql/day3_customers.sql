@@ -52,4 +52,4 @@ In a real business this would inflate customer count and undercount
 true repeat purchase behaviour.
 Business recommendation: implement email/phone deduplication logic
 during customer registration to prevent duplicate accounts.
-*/ss
+*/
