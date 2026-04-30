@@ -29,12 +29,14 @@ LEFT JOIN order_items ON products.product_id = order_items.product_id
 LEFT JOIN orders      ON order_items.order_id = orders.order_id
 WHERE orders.order_status = 'Completed';
 
--- Q4 FINDINGS: Total revenue from completed orders is KES 6,296,160.
--- Desktop PC is the top revenue-generating product at KES 1,020,000
--- driven by its high price of KES 85,000 and 12 units sold.
--- Sofa (KES 780,000) and Dining Table (KES 540,000) follow closely.
--- High ticket items (furniture + electronics) dominate the top 10.
--- Key insight: price drives revenue more than volume in this dataset.
+/*
+Q4 FINDINGS: Total revenue from completed orders is KES 6,296,160.
+Desktop PC is the top revenue-generating product at KES 1,020,000
+driven by its high price of KES 85,000 and 12 units sold.
+Sofa (KES 780,000) and Dining Table (KES 540,000) follow closely.
+High ticket items (furniture + electronics) dominate the top 10.
+Key insight: price drives revenue more than volume in this dataset.
+*/
 ============================================================================
 
 ============================================================================ 
@@ -49,15 +51,17 @@ SELECT
 FROM
     shipping;
 
-Q7 FINDING: Average shipping cost is KES 658.70 per order.
--- Costs range from KES 120 (minimum) to KES 3,000 (maximum).
--- The standard deviation of KES 748.79 exceeds the average —
--- indicating highly inconsistent shipping costs across orders.
--- This suggests shipping pricing depends on distance or product size
--- rather than a flat rate model.
--- Business recommendation: consider a tiered shipping pricing structure
--- to make costs more predictable for customers.
-
+/*
+Q7 FINDING: 
+Average shipping cost is KES 658.70 per order.
+Costs range from KES 120 (minimum) to KES 3,000 (maximum).
+The standard deviation of KES 748.79 exceeds the average —
+indicating highly inconsistent shipping costs across orders.
+This suggests shipping pricing depends on distance or product size
+rather than a flat rate model.
+Business recommendation: consider a tiered shipping pricing structure
+to make costs more predictable for customers.
+*/
 ============================================================================
 
 ============================================================================
@@ -78,24 +82,26 @@ JOIN payments ON orders.order_id = payments.order_id
 GROUP BY month_name, month_num
 ORDER BY month_num ASC;
 
---Q8 FINDING: Dataset covers January to October 2024 (10 months).
---Total revenue across all orders (including cancelled and returned).
---September was the strongest month at KES 447,300 in revenue.
---Two major revenue crashes occurred:
---March dropped KES 267,350 from February — biggest single drop
---October dropped KES 192,800 from September — second biggest drop
---February showed the strongest growth at +KES 148,800 from January.
---July recovered strongly with +KES 135,700 after June's decline.
---Revenue is highly volatile with no consistent upward trend —
---alternating between growth and decline every 1-2 months.
---Monthly revenue ranges from KES 147,350 (March - lowest) 
---to KES 447,300 (September - highest) — a difference of KES 299,950.
---Average order value ranges from KES 4,753 (March) to 
---KES 14,910 (September) suggesting higher value orders
---were placed in September driving that month's peak revenue.
---Business recommendation: investigate March and October drops —
---these two months alone lost KES 460,150 in revenue compared
---to their preceding months, significantly impacting annual performance.
+/*
+Q8 FINDING: Dataset covers January to October 2024 (10 months).
+Total revenue across all orders (including cancelled and returned).
+September was the strongest month at KES 447,300 in revenue.
+Two major revenue crashes occurred:
+March dropped KES 267,350 from February — biggest single drop
+October dropped KES 192,800 from September — second biggest drop
+February showed the strongest growth at +KES 148,800 from January.
+July recovered strongly with +KES 135,700 after June's decline.
+Revenue is highly volatile with no consistent upward trend —
+alternating between growth and decline every 1-2 months.
+Monthly revenue ranges from KES 147,350 (March - lowest) 
+to KES 447,300 (September - highest) — a difference of KES 299,950.
+Average order value ranges from KES 4,753 (March) to 
+KES 14,910 (September) suggesting higher value orders
+were placed in September driving that month's peak revenue.
+Business recommendation: investigate March and October drops —
+these two months alone lost KES 460,150 in revenue compared
+to their preceding months, significantly impacting annual performance.
+*/
 
 ===============================================================================
 
@@ -114,14 +120,16 @@ FROM orders
 GROUP BY month_name, month_num
 ORDER BY month_num ASC;
 
+/*
 Q11 FINDING: Cancellation rates peak in March (16.1%) and January (14.8%)
--- suggesting post-holiday budget constraints drive early-year cancellations.
--- Return rates peak in August (16.1%) possibly linked to back-to-school
--- purchasing decisions being reversed.
--- Overall both rates are consistent at ~13% monthly indicating a structural
--- issue rather than a seasonal one.
--- Combined loss rate of ~26% means 1 in 4 orders never results in a
--- completed sale — a serious business concern worth investigating.
+suggesting post-holiday budget constraints drive early-year cancellations.
+Return rates peak in August (16.1%) possibly linked to back-to-school
+purchasing decisions being reversed.
+Overall both rates are consistent at ~13% monthly indicating a structural
+issue rather than a seasonal one.
+Combined loss rate of ~26% means 1 in 4 orders never results in a
+completed sale — a serious business concern worth investigating.
+*/
 
 ===============================================================================
 
@@ -143,16 +151,18 @@ WHERE order_status = 'Completed'
 GROUP BY category_name
 ORDER BY category_revenue DESC;
 
--- Q14 FINDING: Furniture dominates revenue at 40.6% (KES 2,554,000)
--- followed by Electronics at 35.0% (KES 2,203,000).
--- Together these two categories account for 75.6% of total revenue —
--- a classic Pareto distribution where a minority drives the majority.
--- Automotive sold the most units (82) but ranks only 4th in revenue
--- proving that volume does not equal revenue — price is the key driver.
--- Food (0.2%) and Books (0.7%) contribute minimally despite reasonable
--- unit sales — low price points severely limit their revenue impact.
--- Business recommendation: focus marketing and inventory investment
--- on Furniture and Electronics to maximise revenue returns.
+/*
+Q14 FINDING: Furniture dominates revenue at 40.6% (KES 2,554,000)
+followed by Electronics at 35.0% (KES 2,203,000).
+Together these two categories account for 75.6% of total revenue —
+a classic Pareto distribution where a minority drives the majority.
+Automotive sold the most units (82) but ranks only 4th in revenue
+proving that volume does not equal revenue — price is the key driver.
+Food (0.2%) and Books (0.7%) contribute minimally despite reasonable
+unit sales — low price points severely limit their revenue impact.
+Business recommendation: focus marketing and inventory investment
+on Furniture and Electronics to maximise revenue returns.
+*/
 
 ==============================================================================
 
