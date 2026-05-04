@@ -53,3 +53,22 @@ true repeat purchase behaviour.
 Business recommendation: implement email/phone deduplication logic
 during customer registration to prevent duplicate accounts.
 */
+
+-- ============================================================
+-- Q13: Average order value (AOV) per city
+-- ============================================================
+
+SELECT 
+    customers.city,
+    COUNT(DISTINCT orders.order_id) AS total_orders,
+    COUNT(DISTINCT customers.customer_id) AS total_customers,
+    ROUND(SUM(payments.amount_paid), 2) AS total_revenue,
+    ROUND(AVG(payments.amount_paid), 2) AS avg_order_value,
+    ROUND(MAX(payments.amounT_paid), 2) AS max_order_value,
+    ROUND(MIN(payments.amount_paid), 2) AS min_order_value
+FROM customers
+JOIN orders ON customers.customer_id = orders.customer_id
+JOIN payments ON orders.order_id = payments.order_id
+GROUP BY customers.city
+ORDER BY avg_order_value DESC;
+
