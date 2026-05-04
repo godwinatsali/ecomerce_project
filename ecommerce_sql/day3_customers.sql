@@ -72,3 +72,18 @@ JOIN payments ON orders.order_id = payments.order_id
 GROUP BY customers.city
 ORDER BY avg_order_value DESC;
 
+/*
+Q13 FINDINGS: All 5 cities have exactly 60 orders and 60 customers.
+Despite equal order volumes, revenue varies dramatically by city:
+- Mombasa has the highest AOV at KES 18,926 — 7x higher than Nakuru
+- Nakuru has the lowest AOV at KES 2,679 despite equal order count
+- Mombasa generates KES 1,135,570 total — 41% of all revenue alone
+- Nairobi surprisingly ranks 2nd not 1st despite being the capital
+
+This confirms that order VALUE not order VOLUME drives revenue.
+Mombasa customers consistently purchase higher-priced products
+(max order KES 85,000) while Nakuru customers buy cheaper items
+(max order only KES 25,000).
+Business recommendation: target high-value product marketing
+campaigns specifically at Mombasa and Nairobi customers.
+*/
