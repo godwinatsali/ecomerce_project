@@ -162,4 +162,40 @@ any product going 30+ days without an order should be
 flagged for review or promotion.
 */
 
+-- ============================================================
+-- Q23: Customers who ordered within 30 days of signing up
+-- ============================================================
 
+SELECT 
+    customers.customer_id,
+    customers.first_naMe || ' ' || customers.last_name AS customer_name,
+    customers.city, 
+    customers.signup_date,
+    orders.order_date,
+    orders.order_status,
+    (orders.order_date - customers.signup_date) AS days_to_first_order,
+    payments.amount_paid AS order_value
+FROM customers
+JOIN orders ON customers.customer_id = orders.customer_id
+JOIN payments ON orders.order_id = payments.order_id
+WHERE (orders.order_date - customers.signup_date) <= 30
+AND (orders.order_date - customers.signup_date) >= 0
+ORDER BY days_to_first_order ASC;
+
+/*
+Q23 FINDING: Multiple customers placed orders within 30 days of signup
+showing strong early engagement after registration.
+
+Notable findings:
+- Esther Mutua (Kisumu) ordered on the SAME DAY as signup (0 days)
+  — the fastest converter in the dataset
+- Most early purchases happened within the first 2 weeks
+- Early orders range from KSH 150 to KSH 25,000 in value
+- Not all early orders completed — some were cancelled or returned,
+  suggesting impulse purchases that were later reconsidered
+
+Business recommendation: implement a welcome email with a
+first-purchase discount triggered immediately after signup —
+the data shows customers are most likely to buy in the first
+2 weeks after registration.
+*/
