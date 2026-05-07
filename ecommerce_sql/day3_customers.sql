@@ -6,6 +6,43 @@
 -- ============================================================
 
 -- ============================================================
+-- Q9: Category with highest total revenue
+-- ============================================================
+SELECT 
+    categories.category_name,
+    COUNT(DISTINCT orders.order_id) AS total_orders,
+    SUM(order_items.quantity) AS units_sold,
+    ROUND(SUM(order_items.quantity * products.price), 2) AS total_revenue,
+    ROUND(SUM(order_items.quantity * products.price) * 100.00 /
+         SUM(SUM(order_items.quantity * products.price)) OVER (), 1) AS revenue_pct
+FROM order_items
+JOIN orders ON order_items.order_id = orders.order_id
+JOIN products ON order_items.product_id = products.product_id
+JOIN categories ON products.category_id = categories.category_id
+WHERE order_status = 'Completed'
+GROUP BY categories.category_name
+ORDER BY total_revenue DESC;
+
+/*
+Q9 FINDINGS: Furniture is the highest revenue category at KES 2,554,000
+(40.6% of total completed revenue), followed by Electronics at
+KES 2,203,000 (35.0%).
+
+Together Furniture and Electronics account for 75.6% of all revenue
+from just 2 out of 10 categories — a classic Pareto distribution.
+
+Key insight: Volume does NOT equal revenue.
+- Automotive sold the most units (82) but ranks only 4th in revenue
+- Food and Books together contribute less than 1% of revenue
+  despite having reasonable unit sales
+
+Business recommendation: Prioritize Furniture and Electronics
+in inventory management, marketing spend and promotions.
+Reconsider the value of maintaining Food and Books categories
+which contribute minimally to revenue (combined 0.9%).
+*/
+
+-- ============================================================
 -- Q12: Repeat buyer analysis
 -- ============================================================
 
@@ -87,3 +124,42 @@ Mombasa customers consistently purchase higher-priced products
 Business recommendation: target high-value product marketing
 campaigns specifically at Mombasa and Nairobi customers.
 */
+
+-- ============================================================
+-- Q15: Products that have never been ordered
+-- ============================================================
+
+SELECT
+    products.product_id,
+    products.product_name,
+    categories.category_name,
+    products.price,
+    COUNT(order_items.order_items_id) AS times_ordered
+FROM 
+    products
+JOIN categories ON products.category_id = categories.category_id
+LEFT JOIN order_items ON products.product_id = order_items.product_id
+WHERE order_items.product_id IS NULL
+GROUP BY products.product_id, products.product_name, categories.category_name, products.price
+ORDER BY categories.category_name, products.price;
+
+/*
+Q15 FINDINGS: Query returns no results — every single product
+in the catalogue has been ordered at least once.
+With 100 products and 600 order items, each product averages
+6 orders, confirming healthy demand across the entire catalogue.
+
+This is a POSITIVE business insight — no dead stock exists.
+In real e-commerce businesses, typically 20-30% of products
+never get ordered (the "long tail" problem).
+Having 100% product coverage suggests either:
+1. The product catalogue is well curated to match demand
+2. The dataset covers a short time period where all products
+   had at least one order placed
+
+Business recommendation: monitor this metric monthly —
+any product going 30+ days without an order should be
+flagged for review or promotion.
+*/
+
+
