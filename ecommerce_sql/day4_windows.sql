@@ -1,0 +1,7 @@
+-- ============================================================
+-- DAY 4: Window Functions & Ranking
+-- ============================================================
+-- Techniques: RANK, DENSE_RANK, ROW_NUMBER, LAG, LEAD,
+--             Running totals, Moving averages, NTILE
+-- Questions: Q16, Q17, Q19, Q21, Q10
+-- ============================================================
