@@ -46,3 +46,25 @@ all spending exactly KES 85,000, rank 2 has 5 customers at KES 80,000.
 Using RANK() instead would have produced gaps (rank 1, 1, 1, 1, 1, 6...)
 making the leaderboard misleading.
 */
+
+-- ============================================================
+-- Q17: 3-month rolling average revenue using window functions
+-- ============================================================
+WITH monthly_revenue AS (
+SELECT 
+    TO_CHAR (orders.order_date, 'Month') AS month_name,
+    EXTRACT(MONTH FROM orders.order_date) AS month_num,
+    ROUND(SUM(payments.amount_paid), 2) AS monthly_revenue
+FROM orders
+JOIN payments ON orders.order_id = payments.order_id
+GROUP BY month_name, month_num
+)
+SELECT 
+    month_name,
+    month_num,
+    monthly_revenue,
+    ROUND(AVG(monthly_revenue) OVER (ORDER BY month_num
+    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ), 2) AS rolling_3month_avg
+FROM monthly_revenue
+ORDER BY month_num;
