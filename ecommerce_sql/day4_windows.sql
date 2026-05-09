@@ -68,3 +68,22 @@ SELECT
     ), 2) AS rolling_3month_avg
 FROM monthly_revenue
 ORDER BY month_num;
+
+/*
+Q17 FINDING: 3-month rolling average smooths out monthly volatility
+and reveals the true revenue trend.
+
+Key observations:
+- Rolling average grows from KES 265,900 (Jan) to KSH 395,867 (Sep)
+  showing genuine underlying business growth of 49% over 9 months
+- March raw revenue crashed to KES 147,350 but rolling avg only
+  dropped to KSH 275,983 — confirming March was a temporary dip
+- September is the strongest period — highest in both raw revenue
+  (KSH 447,300) and rolling average (KSH 395,867)
+- October rolling avg (KSH 339,400) suggests Q4 may be slowing down
+
+The rolling average is more reliable for business decisions than
+raw monthly revenue — it filters out noise and shows the real trend.
+Business recommendation: use rolling averages in monthly reports
+to avoid overreacting to single good or bad months.
+*/
