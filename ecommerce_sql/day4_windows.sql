@@ -87,3 +87,58 @@ raw monthly revenue — it filters out noise and shows the real trend.
 Business recommendation: use rolling averages in monthly reports
 to avoid overreacting to single good or bad months.
 */
+
+-- ============================================================
+-- Q19: Top product per category using ROW_NUMBER()
+-- ============================================================
+WITH product_revenue AS (
+    SELECT 
+        categories.category_name,
+        products.product_name,
+        products.price,
+        SUM(order_items.quantity) AS units_sold,
+        ROUND(SUM(order_items.quantity * products.price), 2) AS total_revenue,
+        ROW_NUMBER() OVER 
+                    (PARTITION BY categories.category_name
+                    ORDER BY SUM(order_items.quantity * products.price) DESC) AS rank_in_category
+FROM order_items
+JOIN products ON order_items.product_id = products.product_id
+JOIN categories ON products.category_id = categories.category_id
+JOIN orders ON order_items.order_id = orders.order_id
+WHERE order_status = 'Completed'
+GROUP BY category_name, product_name, price
+)
+SELECT 
+    category_name,
+    product_name,
+    price,
+    units_sold,
+    total_revenue,
+    rank_in_category
+FROM 
+    product_revenue
+WHERE rank_in_category = 1
+ORDER BY total_revenue DESC;
+
+/*
+Q19 FINDING: Top product per category reveals massive revenue
+disparity driven entirely by price differences.
+
+Category Champions:
+  Electronics → Desktop PC     (KSH 1,020,000) — revenue Top
+  Furniture   → Sofa           (KSH   780,000) — strong 2nd
+  Food        → Cooking Oil    (KSH    3,600) — bottom
+
+Desktop PC generates 283 times more revenue than Cooking Oil
+despite both being their category's top performer.
+This confirms price is the dominant revenue driver.
+
+Toys, Beauty and Sports all tie at KSH 30,000 —
+ROW_NUMBER() selected one winner per category arbitrarily
+when revenues were equal. In a real scenario DENSE_RANK()
+would be more appropriate to identify ALL tied winners.
+
+Business recommendation: focus inventory and promotions on
+Desktop PC and Sofa — two products that alone account for
+a significant portion of total completed revenue.
+*/
