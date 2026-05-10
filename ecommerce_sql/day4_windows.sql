@@ -142,3 +142,47 @@ Business recommendation: focus inventory and promotions on
 Desktop PC and Sofa — two products that alone account for
 a significant portion of total completed revenue.
 */
+
+-- ============================================================
+-- Q21: Cumulative revenue over time (running total)
+-- ============================================================
+WITH monthly AS(
+  SELECT 
+    TO_CHAR(orders.order_date, 'Month') AS month_name,
+    EXTRACT(MONTH FROM orders.order_date) AS month_num,
+    ROUND(SUM(payments.amount_paid), 2) AS monthly_revenue
+  FROM orders
+  JOIN payments ON orders.order_id = payments.order_id
+  GROUP BY month_name, month_num
+)
+SELECT 
+  month_name,
+  month_num,
+  monthly_revenue,
+  ROUND(SUM(monthly_revenue) OVER (
+      ORDER BY month_num
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) AS cumulative_revenue,
+  ROUND(monthly_revenue * 100 / SUM(monthly_revenue) OVER (), 1) AS monthly_pct_of_total
+  FROM monthly
+  ORDER BY month_num
+
+  /*
+Q21 FINDINGS: Cumulative revenue reached KHS 3,294,450 over 10 months
+(January to October 2024).
+
+Key milestones:
+- KHS 1M crossed between March and April (end of Q1)
+- KHS 2M crossed between June and July (mid-year)
+- KHS 3M crossed in September (month 9 of 10)
+
+Revenue concentration:
+- Top 3 months (Sep 13.6%, May 13.0%, Feb 12.6%) = 39.2% of total
+- Bottom 3 months (Mar 4.5%, Oct 7.7%, Jan 8.1%) = 20.3% of total
+- September is the single strongest month at KES 447,300 (13.6%)
+- March is the weakest at KES 147,350 (4.5%)
+
+The business generates revenue unevenly — 3 months drive nearly
+40% of annual revenue while the weakest 3 months contribute
+only 20%. This volatility is a business risk worth addressing
+through promotions in historically weak months (March, October).
+*/
