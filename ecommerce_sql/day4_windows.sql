@@ -186,3 +186,40 @@ The business generates revenue unevenly — 3 months drive nearly
 only 20%. This volatility is a business risk worth addressing
 through promotions in historically weak months (March, October).
 */
+
+-- ============================================================
+-- Q10: Average delivery time (days) per city
+-- ============================================================
+SELECT 
+  customers.city,
+  COUNT(DISTINCT orders.order_id) AS total_orders,
+  ROUND(AVG(shipping.delivery_date - shipping.shipping_date), 1) AS avg_delivery_days,
+  MIN(shipping.delivery_date - shipping.shipping_date) AS fastest_delivery,
+  MAX(shipping.delivery_date - shipping.shipping_date) AS slowest_delivery,
+  ROUND(SUM(shipping.shipping_cost), 2) AS avg_shipping_cost,
+  RANK() OVER(ORDER BY AVG(shipping.delivery_date - shipping.shipping_date) ASC ) AS delivery_speed_rank
+FROM customers
+JOIN orders ON customers.customer_id = orders.customer_id
+JOIN shipping ON orders.order_id = shipping.order_id
+GROUP BY customers.city
+ORDER BY avg_delivery_days ASC;
+
+/*
+Q10 FINDINGS: All 5 cities have identical average delivery time of
+exactly 3 days with no variation (fastest = slowest = 3 days).
+
+This uniformity suggests a standardised delivery policy or
+synthetic dataset pattern. In real e-commerce data, delivery
+times would vary based on distance, logistics partners and
+order volume.
+
+However shipping COSTS vary significantly despite equal times:
+- Mombasa costs KES 52,210 total — most expensive to ship to
+- Eldoret costs KES 29,820 total — cheapest despite being furthest
+This cost variation without time variation suggests pricing
+is based on route complexity not just distance or speed.
+
+Business recommendation: if delivery time is truly uniform,
+use this as a marketing advantage — advertise guaranteed
+3-day delivery to all cities nationwide.
+*/
