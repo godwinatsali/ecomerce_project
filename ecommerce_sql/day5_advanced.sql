@@ -1,0 +1,7 @@
+-- ============================================================
+-- DAY 5: Advanced Analytics & Data Quality
+-- ============================================================
+-- Techniques: Self-joins, CTEs, subqueries, anomaly detection,
+--             data quality checks, retention analysis
+-- Questions: Q18, Q20, Q22, Q26, Q29
+-- ============================================================
