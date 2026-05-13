@@ -45,3 +45,8 @@ Business application: these pairs are the foundation of a
 Displaying Skipping Rope on the Cricket Bat product page could
 increase average order value significantly.
 */
+
+-- ============================================================
+-- Q20: Customer retention rate
+-- Customers who reordered within 90 days of their first order
+-- ============================================================
