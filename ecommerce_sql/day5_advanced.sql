@@ -133,3 +133,7 @@ where each customer was generated with exactly one order.
 In real e-commerce data, retention rates typically range
 from 20-40% for healthy businesses.
 */
+
+-- ============================================================
+-- Q22: Data quality check — payment vs product total mismatch
+-- ============================================================
