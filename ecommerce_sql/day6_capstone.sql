@@ -1,0 +1,7 @@
+-- ============================================================
+-- DAY 6: Capstone — RFM Segmentation & Advanced Analytics
+-- ============================================================
+-- Techniques: RFM analysis, NTILE, cohort analysis,
+--             churn detection, product dashboard
+-- Questions: Q24, Q25, Q27, Q28, Q30
+-- ============================================================
