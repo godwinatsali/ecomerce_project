@@ -97,7 +97,6 @@ SELECT
     ROUND(COUNT(CASE WHEN total_orders > 1 THEN 1 END) * 100 / COUNT(*), 1) AS repeat_rate_pct,
     ROUND(AVG(total_orders), 2) AS avg_orders_per_customers
 FROM customer_orders
-
 /*
 Q20 FINDINGS: Customer retention rate = 0%
 
@@ -137,3 +136,69 @@ from 20-40% for healthy businesses.
 -- ============================================================
 -- Q22: Data quality check — payment vs product total mismatch
 -- ============================================================
+WITH order_product_total AS(
+    SELECT 
+        order_items.order_id,
+        ROUND(SUM(order_items.quantity * products.price), 2) AS expected_total
+    FROM order_items
+    JOIN products ON order_items.product_id = products.product_id
+    GROUP BY order_items.order_id
+),
+order_payment AS (
+    SELECT
+        order_id,
+        amount_paid AS actual_payment
+    FROM payments
+)
+SELECT
+    orders.order_id,
+    orders.order_status,
+    order_product_total.expected_total,
+    order_payment.actual_payment,
+    ROUND(order_product_total.expected_total - order_payment.actual_payment) AS difference,
+    CASE
+        WHEN order_payment.actual_payment > order_product_total.expected_total THEN 'Overpaid'
+        WHEN order_payment.actual_payment < order_product_total.expected_total THEN 'Underpaid'
+        ELSE 'Match'
+    END AS payment_status
+FROM orders
+JOIN order_product_total ON orders.order_id = order_product_total.order_id
+JOIN order_payment ON orders.order_id = order_payment.order_id
+WHERE ROUND(order_payment.actual_payment - order_product_total.expected_total, 2) != 0
+ORDER BY ABS(order_payment.actual_payment - order_product_total.expected_total) DESC
+LIMIT 20;
+/*
+Q22 FINDINGS: CRITICAL DATA QUALITY ISSUE DETECTED
+
+Every order in the dataset shows a significant underpayment gap
+between expected product total and actual payment recorded.
+
+Most extreme cases:
+  Order 76:  expected KHS 182,000 → paid KHS 200    (0.1% paid)
+  Order 68:  expected KHS 130,300 → paid KHS 800    (0.6% paid)
+  Order 69:  expected KHS 120,000 → paid KHS 500    (0.4% paid)
+
+Two possible explanations:
+
+1. DATA MISMATCH: The payments table records individual item
+   payments (e.g. one product in a multi-product order) while
+   order_items records the full order total. The tables are
+   not aligned at the same level of granularity.
+
+2. GENUINE REVENUE LEAKAGE: If this were real data, customers
+   are being charged only a fraction of their order value —
+   representing massive revenue loss for the business.
+
+Additional finding: Cancelled (order 19, 169) and Returned
+(order 120) orders also show payments recorded — suggesting
+refunds were never processed for failed orders.
+
+Business recommendation: Immediately audit the payment
+processing system to determine whether the mismatch is a
+reporting/data alignment issue or genuine revenue leakage.
+This should be escalated to the finance team as a priority.
+
+Note: This finding demonstrates the value of data quality
+checks in SQL analysis — without this query the revenue
+discrepancy would go completely undetected.
+*/
