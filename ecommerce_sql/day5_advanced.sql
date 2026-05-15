@@ -202,3 +202,63 @@ Note: This finding demonstrates the value of data quality
 checks in SQL analysis — without this query the revenue
 discrepancy would go completely undetected.
 */
+
+-- ============================================================
+-- Q26: Revenue per category vs overall average using CTE
+-- ============================================================
+WITH category_revenue AS (
+    SELECT
+        categories.category_name,
+        COUNT(DISTINCT orders.order_id) AS total_orders,
+        ROUND(SUM(order_items.quantity * products.price), 2) AS category_revenue,
+        ROUND(AVG(order_items.quantity * products.price), 2) AS avg_order_value
+    FROM order_items
+    JOIN orders ON order_items.order_id = orders.order_id
+    JOIN products ON order_items.product_id = products.product_id
+    JOIN categories ON products.category_id = categories.category_id
+    WHERE orders.order_status = 'Completed'
+    GROUP BY categories.category_name
+),
+overall_average AS (
+    SELECT ROUND(AVG(category_revenue), 2) AS avg_revenue_across_categories
+    FROM category_revenue
+)
+SELECT
+    category_revenue.category_name,
+    category_revenue.total_orders,
+    category_revenue.category_revenue,
+    overall_average.avg_revenue_across_categories,
+    ROUND(category_revenue.category_revenue - overall_average.avg_revenue_across_categories, 2) AS diff_from_average,
+    CASE
+        WHEN category_revenue.category_revenue > overall_average.avg_revenue_across_categories
+        THEN 'Above_average'
+        ELSE 'Below_average'
+    END AS perfomance
+    FROM category_revenue
+    CROSS JOIN overall_average
+    ORDER BY category_revenue.category_revenue DESC;
+/*
+Q26 FINDINGS: Only 2 out of 10 categories perform above the
+overall average revenue of KHS 629,816.
+
+Above average performers:
+  Furniture    - KHS 2,554,000 (304% above average)
+  Electronics  - KHS 2,203,000 (249% above average)
+
+Below average performers (8 categories):
+  Home     - closest to average (only KHS 99,216 below)
+  Food     - furthest below (KHS 614,216 below — 97% below average)
+
+The average is heavily inflated by Furniture and Electronics
+dominance — making it an unfair benchmark for other categories.
+A better analysis would segment categories into tiers:
+
+  Tier 1 (Premium):    Furniture, Electronics  (>KHS 1M)
+  Tier 2 (Mid-range):  Home, Automotive        (KHS 300K-600K)
+  Tier 3 (Low-value):  Clothing, Sports, Toys,
+                       Beauty, Books, Food      (<KHS 250K)
+
+Business recommendation: do not use a single average as the
+performance benchmark when revenue distribution is this skewed.
+Use tier-based benchmarks instead for fairer category evaluation.
+*/
