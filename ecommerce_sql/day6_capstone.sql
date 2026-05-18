@@ -7,7 +7,8 @@
 -- ============================================================
 
 -- ============================================================
--- Q24: Full RFM (Recency, Frequency and Monetary) Customer Segmentation using NTILE()
+-- Q24: Full RFM (Recency, Frequency and Monetary) Customer
+-- Segmentation using NTILE()
 -- ============================================================
 
 WITH max_date AS (
@@ -105,3 +106,46 @@ Business recommendations by segment:
   At Risk:            Win-back discounts, personalised offers
   Lost:               Last-chance re-engagement campaign
 */
+
+-- ============================================================
+-- Q25: Cohort retention table by signup month
+-- ============================================================
+-- Part A: Full cohort analysis
+WITH customer_cohorts AS (
+    SELECT
+        customers.customer_id,
+        DATE_TRUNC('Month', customers.signup_date) AS cohort_month,
+        DATE_TRUNC('month', orders.order_date) AS order_month
+    FROM customers
+    JOIN orders ON customers.customer_id = orders.customer_id
+),
+cohort_data AS (
+    SELECT 
+        cohort_month,
+        order_month,
+        EXTRACT(YEAR FROM AGE(order_month, cohort_month)) * 12 +
+        EXTRACT(MONTH FROM AGE(order_month, cohort_month)) AS month_number,
+        COUNT(DISTINCT customer_id) AS customers
+    FROM customer_cohorts
+    GROUP BY cohort_month, order_month
+),
+cohort_sizes AS (
+    SELECT
+        cohort_month,
+        customers AS cohort_size
+    FROM cohort_data
+    WHERE month_number = 0
+)
+SELECT
+    TO_CHAR (cohort_data.cohort_month, 'YYYY-MM') AS cohort,
+    cohort_sizes.cohort_size,
+    cohort_data.cohort_month,
+    cohort_data.customers AS active_customers,
+    ROUND(cohort_data.customers * 100 / cohort_sizes.cohort_size, 1) AS retention_pct
+FROM cohort_data
+JOIN cohort_sizes ON cohort_data.cohort_month = cohort_sizes.cohort_month
+GROUP BY cohort_data.cohort_month, cohort_data.month_number, cohort_sizes.cohort_size, cohort_data.customers;
+
+-- ============================================================
+-- Part B: Simplified cohort analysis (better for this dataset)
+-- ============================================================
