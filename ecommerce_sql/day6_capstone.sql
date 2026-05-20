@@ -149,3 +149,94 @@ GROUP BY cohort_data.cohort_month, cohort_data.month_number, cohort_sizes.cohort
 -- ============================================================
 -- Part B: Simplified cohort analysis (better for this dataset)
 -- ============================================================
+WITH first_orders AS (
+    SELECT
+        customer_id,
+        DATE_TRUNC('month', MIN(order_date)) AS first_order_month
+    FROM orders
+    WHERE order_status = 'Completed'
+    GROUP BY customer_id
+),
+customer_cohorts AS (
+    SELECT 
+        orders.customer_id,
+        TO_CHAR(first_orders.first_order_month, 'YYYY-MM') AS cohort_month,
+        TO_CHAR(DATE_TRUNC('month', orders.order_date), 'YYYY-MM') AS order_month,
+        EXTRACT(YEAR FROM AGE(
+            DATE_TRUNC('month', orders.order_date),
+            first_orders.first_order_month
+        )) * 12 +
+        EXTRACT(MONTH FROM AGE(
+            DATE_TRUNC('month', orders.order_date),
+            first_orders.first_order_month
+        )) AS month_number
+    FROM orders
+    JOIN first_orders ON orders.customer_id = first_orders.customer_id
+    WHERE orders.order_status = 'Completed'
+),
+cohort_sizes AS (
+    SELECT
+        cohort_month,
+        COUNT(DISTINCT customer_id) AS cohort_size
+    FROM customer_cohorts
+    WHERE month_number = 0
+    GROUP BY cohort_month
+),
+cohort_activity AS (
+    SELECT
+        cohort_month,
+        month_number,
+        COUNT(DISTINCT customer_id) AS active_customers
+    FROM customer_cohorts
+    GROUP BY cohort_month, month_number
+)
+SELECT
+    cohort_activity.cohort_month,
+    cohort_sizes.cohort_size,
+    cohort_activity.month_number,
+    cohort_activity.active_customers,
+    ROUND(cohort_activity.active_customers * 100 / cohort_sizes.cohort_size, 1) AS retention_pct
+FROM cohort_activity
+JOIN cohort_sizes ON cohort_activity.cohort_month = cohort_sizes.cohort_month
+ORDER BY cohort_activity.cohort_month, cohort_activity.month_number;
+
+/*
+Q25 FINDINGS: Cohort retention table (based on first order month)
+
+All 10 monthly cohorts visible (Jan-Oct 2024):
+  Jan cohort: 20 customers → 100% at month 0
+  Feb cohort: 22 customers → 100% at month 0
+  Mar cohort: 22 customers → 100% at month 0
+  ...
+  Oct cohort: 22 customers → 100% at month 0
+
+Every cohort shows 100% retention at month 0 — expected
+since month 0 IS the first order month.
+
+NO cohort shows any month 1, 2 or 3 retention — confirming
+the finding from Q20 that every customer placed exactly
+1 order and never returned.
+
+This means customer retention rate = 0% across ALL cohorts
+and ALL time periods. The business acquires customers once
+and never sees them again.
+
+In a healthy e-commerce business a typical cohort table
+would look like this:
+  Cohort  | Month 0 | Month 1 | Month 2 | Month 3
+  2024-01 | 100%    | 35%     | 22%     | 18%
+  2024-02 | 100%    | 31%     | 25%     | 20%
+
+The fact that our table shows only month 0 for every cohort
+is itself the most important finding — zero repeat purchases
+is a critical business problem requiring immediate action.
+
+Business recommendation: implement post-purchase email
+sequences, loyalty rewards and personalised re-engagement
+campaigns targeting customers at the 30, 60 and 90 day
+marks after their first purchase.
+*/
+
+-- ============================================================
+-- Q27: High value customers active in Q1 but silent in Q2
+-- ============================================================
