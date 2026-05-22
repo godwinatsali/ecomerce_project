@@ -239,4 +239,106 @@ marks after their first purchase.
 
 -- ============================================================
 -- Q27: High value customers active in Q1 but silent in Q2
+-- ============================================================1
+WITH q1_spenders AS (
+    SELECT 
+        customers.customer_id,
+        customers.first_name || ' ' || customers.last_name AS customer_name,
+        customers.city,
+        ROUND(SUM(payments.amount_paid), 2) AS q1_spend,
+        COUNT(DISTINCT orders.order_id) AS q1_orders
+    FROM customers
+    JOIN orders ON customers.customer_id = orders.customer_id
+    JOIN payments ON orders.order_id = payments.order_id
+    WHERE orders.order_date BETWEEN '2024-01-01' AND '2024-03-31'
+        AND orders.order_status = 'Completed'
+    GROUP BY customers.customer_id, customers.first_name, customers.last_name, customers.city
+),
+q2_buyers AS (
+    SELECT DISTINCT customer_id
+    FROM orders
+    WHERE orders.order_date BETWEEN '2024-04-01' AND '2024-06-30'
+    AND orders.order_status = 'Completed'
+)
+SELECT 
+    q1_spenders.customer_id,
+    q1_spenders.customer_name,
+    q1_spenders.city,
+    q1_spenders.q1_spend,
+    q1_spenders.q1_orders,
+    'Active in Q1 — Silent in Q2' AS order_status
+FROM q1_spenders
+LEFT JOIN q2_buyers ON q1_spenders.customer_id = q2_buyers.customer_id
+WHERE q2_buyers.customer_id IS NULL
+ORDER BY q1_spenders.q1_spend DESC
+LIMIT 15;
+/*
+Q27 FINDING: 15 high-value Q1 customers went completely silent in Q2.
+
+Top silent customers by Q1 spend:
+  John Kimani    (Nairobi) → KHS 65,000
+  Faith Mwangi   (Nairobi) → KHS 65,000
+  Mary Hassan    (Eldoret) → KHS 55,000
+  James Odhiambo (Nairobi) → KHS 45,000
+  Esther Mutua   (Kisumu)  → KHS 45,000
+
+Combined Q1 revenue from these 15 customers: KHS 556,000
+All of this revenue was lost in Q2 with no repeat purchases.
+
+City breakdown of silent customers:
+  Nairobi → 5 customers (highest loss)
+  Kisumu  → 4 customers
+  Eldoret → 4 customers
+  Mombasa → 1 customer
+  Nakuru  → 1 customer
+
+This is consistent with Q20 and Q25 findings — 0% retention
+across the entire dataset means ALL high value customers
+went silent after their first purchase.
+
+Business recommendation: these 15 customers represent the
+highest priority re-engagement targets. A personalised
+win-back campaign with a 10-15% discount voucher targeted
+at customers who spent above KHS 40,000 in Q1 could
+recover a significant portion of lost revenue.
+*/
+
 -- ============================================================
+-- Q28: Product performance dashboard
+-- ============================================================
+WITH product_stats AS(
+    SELECT 
+        products.product_id,
+        products.product_name,
+        categories.category_name,
+        products.price,
+        COUNT(DISTINCT orders.order_id) AS total_orders,
+        SUM(order_items.quantity) AS units_sold,
+        ROUND(SUM(order_items.quantity * products.price), 2) AS total_revenue,
+        round(avg(order_items.quantity * products.price), 2) AS avg_order_value,
+        COUNT(CASE WHEN orders.order_status = 'Returned' THEN 1 END) AS returns,
+        COUNT(CASE WHEN orders.order_status = 'Cancelled' THEN 1 END) AS cancellations,
+        ROUND(COUNT(CASE WHEN orders.order_status = 'Returned'THEN 1 END) * 100.0 / 
+        NULLIF(COUNT(DISTINCT orders.order_id), 0), 1) AS return_rate_pct 
+    FROM products
+    JOIN categories ON products.category_id = categories.category_id
+    JOIN order_items ON products.product_id = order_items.product_id
+    JOIN orders ON order_items.order_id = orders.order_id
+    GROUP BY products.product_id, products.product_name, categories.category_name, products.price
+)
+SELECT 
+    product_name,
+    category_name,
+    price,
+    units_sold,
+    total_revenue,
+    avg_order_value,
+    returns,
+    cancellations,
+    return_rate_pct,
+RANK() OVER(ORDER BY total_revenue DESC) AS revenue_rank,
+RANK() OVER(ORDER BY units_sold DESC) AS volume_rank,
+RANK() OVER(ORDER BY return_rate_pct DESC) AS quality_rank
+FROM product_stats
+ORDER BY total_revenue DESC
+LIMIT 15;
