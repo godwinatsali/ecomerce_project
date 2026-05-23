@@ -371,3 +371,105 @@ Business recommendation:
      control — all showing returns despite mid-range pricing
 */
 
+-- ============================================================
+-- Q30: Churn signal detection
+-- Customers who show sudden drop in order frequency
+-- ============================================================
+WITH customer_monthly_orders AS (
+    SELECT
+        customers.customer_id,
+        customers.first_name || ' ' || customers.last_name AS customer_name,
+        customers.city,
+        TO_CHAR(orders.order_date, 'YYYY-MM') AS order_month,
+        COUNT(DISTINCT orders.order_id) AS monthly_orders,
+        ROUND(SUM(payments.amount_paid), 2) AS monthly_spend
+    FROM customers
+    JOIN orders ON customers.customer_id = orders.customer_id
+    JOIN payments ON orders.order_id = payments.order_id
+    GROUP BY customers.customer_id, customers.first_name, customers.last_name, customers.city, order_month
+),
+customer_activity AS (
+    SELECT 
+        customer_id,
+        customer_name,
+        city,
+        MAX(order_month) AS first_active_month,
+        MIN(order_month) AS last_active_month,
+        COUNT(DISTINCT order_month) AS active_months,
+        SUM(monthly_orders) AS total_orders,
+        ROUND(SUM(monthly_spend), 2) AS total_spend
+    FROM customer_monthly_orders
+    GROUP BY customer_id, customer_name, city
+),
+churn_signals AS (
+    SELECT
+        customer_id,
+        customer_name,
+        city,
+        first_active_month,
+        last_active_month,
+        active_months,
+        total_orders,
+        total_spend,
+        CASE 
+           WHEN last_active_month <= '2024-03'
+           AND total_spend >= 10000
+           THEN 'Early Churner - High Value'
+           WHEN last_active_month <= '2024-06'
+           AND total_spend >= 5000
+           THEN 'Mid-year Churner'
+           WHEN last_active_month <= '2024-08' 
+           THEN 'Recent Churner'
+           ELSE 'Still Active'
+        END AS churn_status
+    FROM customer_activity
+)
+SELECT
+    churn_status,
+    COUNT(*) AS customer_count,
+    ROUND(AVG(total_spend), 2) AS avg_spend,
+    MIN(total_spend) AS min_spend,
+    MAX(total_spend) AS max_spend,
+    ROUND(COUNT(*) * 100.0 / 
+        SUM(COUNT(*)) OVER (), 1) AS pct_of_customers
+FROM churn_signals
+GROUP BY churn_status
+ORDER BY avg_spend DESC;
+/*
+Q30 FINDINGS: Churn signal analysis reveals 80% of customers
+show signs of churn — only 20% remain active.
+
+Segment breakdown:
+  Early Churner High Value: 20 customers (6.7%)
+    → Avg spend KHS 33,750 (highest value lost customers)
+    → Churned before April 2024 despite high spending
+    → Range KHS 12,000 to KHS 85,000
+    → PRIORITY 1 for win-back campaigns
+
+  Mid-year Churner: 40 customers (13.3%)
+    → Avg spend KHS 23,875
+    → Churned between April and June 2024
+    → Range KHS 5,000 to KHS 85,000
+    → PRIORITY 2 for re-engagement
+
+  Recent Churner: 180 customers (60.0%)
+    → Avg spend KHS 5,348 (lowest value)
+    → Largest segment — majority of customers
+    → Ordered late 2024 and not returned
+    → PRIORITY 3 — mass email campaign
+
+  Still Active: 60 customers (20.0%)
+    → Avg spend KHS 11,697
+    → Only 20% of customer base remains engaged
+    → Focus retention efforts here to prevent further churn
+
+Total revenue at risk from churned customers:
+  Early Churner:   20 × KHS 33,750 = KHS   675,000
+  Mid-year Churner: 40 × KHS 23,875 = KHS   955,000
+  Recent Churner:  180 × KHS  5,348 = KHS   962,640
+  Total at risk:                      KHS 2,592,640
+
+Business recommendation: implement a 3-tier win-back strategy
+targeting each churn segment with different incentives based
+on their value and recency of churn.
+*/
