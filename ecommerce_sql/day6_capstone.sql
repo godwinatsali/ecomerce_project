@@ -342,3 +342,32 @@ RANK() OVER(ORDER BY return_rate_pct DESC) AS quality_rank
 FROM product_stats
 ORDER BY total_revenue DESC
 LIMIT 15;
+/*
+Q28 FINDING: Product performance dashboard — top 15 products
+
+Revenue champions (zero returns):
+  Desktop PC    → KHS 1,020,000 → revenue rank 1, quality rank 1
+  Sofa          → KHS   780,000 → revenue rank 2, quality rank 1
+  Dining Table  → KHS   540,000 → revenue rank 4, quality rank 1
+  Laptop        → KHS   390,000 → revenue rank 6, quality rank 1
+Products with return issues:
+  Wardrobe      → KHS 660,000 but 2 returns (3rd highest revenue)
+  Graphics Card → KHS 270,000 with 2 returns
+  Fridge        → KHS 270,000 with 2 returns
+  Mattress      → KHS 150,000 with 2 returns
+  Vacuum Cleaner→ KHS 108,000 with 2 returns
+The three-rank system reveals nuanced performance:
+  Desktop PC: revenue_rank=1, volume_rank=1, quality_rank=1
+  → Perfect performer across all dimensions
+  Wardrobe: revenue_rank=3 but has returns
+  → High revenue but quality issues need investigation
+  Bed: revenue_rank=5, units=6 (half of top products)
+  → High price (KES 80,000) compensates for lower volume
+Business recommendation:
+  1. Prioritise Desktop PC and Sofa — top revenue with zero returns
+  2. Investigate Wardrobe return reasons — 3rd highest revenue
+     product with quality issues is a significant risk
+  3. Review Graphics Card, Fridge and Vacuum Cleaner quality
+     control — all showing returns despite mid-range pricing
+*/
+
