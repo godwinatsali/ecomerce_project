@@ -24,6 +24,12 @@ For my deep dive into the Kenyan e-comerce dataset i used several key tools:
 - **PostgreSQL** - The chosen database management system, ideal for handling relational e-commerce data across 7 interconnected tables
 - **Visual Studio Code** - My go-to editor for database managemebt and executing SQL queries with the SQLTools extension
 - **Git & Github** - Essential for version control and sharing my SQL scripts and analysis, ensuring project tracking and portfolio visibility
+- **Power BI Desktop** - used to build an interactive 4-page business 
+  dashboard visualising all key findings from the SQL analysis. 
+  Includes DAX measures for calculated KPIs, cross-page slicers for 
+  dynamic filtering, and relationship modelling across 7 tables.
+  The dashboard covers executive summary, sales analysis, customer 
+  behaviour and product performance.
 
 ---
 
