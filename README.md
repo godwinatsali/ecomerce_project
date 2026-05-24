@@ -242,6 +242,18 @@ right business questions and letting the data tell its story.
 
 ---
 
-*Built with PostgreSQL • Analysed with SQL • Hosted on GitHub*
+## Dashboard Preview
+
+![Dashboard](dashboard_preview.png)
+
+| File | Description |
+|---|---|
+| [ecommerce_dashboard.pbix](ecommerce_dashboard.pbix) | Power BI Desktop file |
+| [ecommerce_dashboard.pdf](ecommerce_dashboard.pdf) | PDF export of all 4 pages |
+
+
+---
+
+*Built with PostgreSQL • Analysed with SQL • Hosted on GitHub • Visualization  Powe BI*
 
 **Godwin Atsali**
