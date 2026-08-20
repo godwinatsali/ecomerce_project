@@ -350,7 +350,7 @@ Revenue champions (zero returns):
   Sofa          → KHS   780,000 → revenue rank 2, quality rank 1
   Dining Table  → KHS   540,000 → revenue rank 4, quality rank 1
   Laptop        → KHS   390,000 → revenue rank 6, quality rank 1
-  
+   
 Products with return issues:
   Wardrobe      → KHS 660,000 but 2 returns (3rd highest revenue)
   Graphics Card → KHS 270,000 with 2 returns

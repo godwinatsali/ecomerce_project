@@ -317,3 +317,5 @@ Business recommendation: in a real scenario, route-based
 delivery time analysis would identify underperforming
 logistics partners and routes requiring service improvement.
 */
+
+SELECT * FROM categories
